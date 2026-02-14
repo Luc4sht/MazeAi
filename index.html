@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAZE IA</title>
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:linear-gradient(135deg,#0f0f0f,#1a0033);
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  color:white;
+}
+
+/* HEADER */
+.ai-header{
+  display:flex;
+  align-items:center;
+  padding:15px 20px;
+  background:#1a1a1a;
+  gap:15px;
+  border-bottom:1px solid #2a2a2a;
+  flex-wrap:wrap;
+}
+
+.ai-back-btn{
+  background:#2a2a2a;
+  border:none;
+  color:white;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  font-size:20px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:0.2s;
+  text-decoration:none;
+  color:white;
+}
+
+.ai-back-btn:hover{
+  background:#3a3a3a;
+  transform:scale(1.05);
+}
+
+.ai-header-title{
+  font-size:20px;
+  font-weight:bold;
+  flex:1;
+}
+
+.ai-header-title span{
+  color:#6a00ff;
+}
+
+.ai-actions{
+  display:flex;
+  gap:10px;
+}
+
+.ai-icon-btn{
+  background:transparent;
+  border:1px solid #333;
+  color:#aaa;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  font-size:18px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:0.2s;
+}
+
+.ai-icon-btn:hover{
+  border-color:#6a00ff;
+  color:#6a00ff;
+  transform:scale(1.05);
+}
+
+.ai-clear-btn{
+  background:transparent;
+  border:1px solid #333;
+  color:#aaa;
+  padding:8px 15px;
+  border-radius:20px;
+  font-size:13px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.ai-clear-btn:hover{
+  border-color:#6a00ff;
+  color:#6a00ff;
+}
+
+.ai-rename-btn{
+  background:transparent;
+  border:1px solid #333;
+  color:#aaa;
+  padding:8px 15px;
+  border-radius:20px;
+  font-size:13px;
+  cursor:pointer;
+  transition:0.2s;
+  margin-left:10px;
+}
+
+.ai-rename-btn:hover{
+  border-color:#6a00ff;
+  color:#6a00ff;
+}
+
+/* MAIN CONTENT */
+.ai-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  background:linear-gradient(135deg,#0a0a0a,#1a0033);
+  overflow-y:auto;
+  padding:20px;
+}
+
+/* WELCOME SCREEN */
+.ai-welcome{
+  text-align:center;
+  margin:40px 0 30px;
+}
+
+.ai-logo{
+  font-size:52px;
+  font-weight:bold;
+  margin-bottom:15px;
+  text-shadow:0 0 20px #6a00ff;
+}
+
+.ai-logo span{
+  color:#6a00ff;
+}
+
+.ai-subtitle{
+  color:#aaa;
+  font-size:15px;
+  margin-bottom:40px;
+  max-width:500px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* SUGGESTION CARDS */
+.ai-suggestions{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:15px;
+  max-width:500px;
+  margin:0 auto 40px;
+}
+
+.ai-suggestion-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(106,0,255,0.3);
+  border-radius:20px;
+  padding:20px 15px;
+  cursor:pointer;
+  transition:0.2s;
+  text-align:center;
+  backdrop-filter:blur(10px);
+}
+
+.ai-suggestion-card:hover{
+  background:rgba(106,0,255,0.15);
+  border-color:#6a00ff;
+  transform:translateY(-5px);
+  box-shadow:0 10px 20px rgba(106,0,255,0.2);
+}
+
+.ai-suggestion-emoji{
+  font-size:32px;
+  margin-bottom:10px;
+}
+
+.ai-suggestion-text{
+  font-size:14px;
+  color:#ccc;
+  font-weight:500;
+}
+
+/* SIDEBAR */
+.ai-sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  width:280px;
+  height:100%;
+  background:#1a1a1a;
+  border-right:1px solid #2a2a2a;
+  padding:20px;
+  transform:translateX(-100%);
+  transition:0.3s;
+  z-index:1000;
+  overflow-y:auto;
+}
+
+.ai-sidebar.open{
+  transform:translateX(0);
+}
+
+.ai-sidebar-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+  padding-bottom:10px;
+  border-bottom:1px solid #2a2a2a;
+}
+
+.ai-sidebar-title{
+  font-size:16px;
+  font-weight:bold;
+}
+
+.ai-sidebar-title span{
+  color:#6a00ff;
+}
+
+.ai-sidebar-close{
+  background:transparent;
+  border:none;
+  color:#aaa;
+  font-size:24px;
+  cursor:pointer;
+}
+
+.ai-sidebar-close:hover{
+  color:#6a00ff;
+}
+
+.ai-chat-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.ai-chat-item{
+  background:rgba(255,255,255,0.03);
+  border:1px solid #2a2a2a;
+  border-radius:10px;
+  padding:12px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.ai-chat-item:hover{
+  background:rgba(106,0,255,0.1);
+  border-color:#6a00ff;
+}
+
+.ai-chat-item-title{
+  font-size:14px;
+  font-weight:bold;
+  margin-bottom:5px;
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.ai-chat-item-rename{
+  color:#6a00ff;
+  font-size:12px;
+  cursor:pointer;
+  opacity:0;
+  transition:0.2s;
+}
+
+.ai-chat-item:hover .ai-chat-item-rename{
+  opacity:1;
+}
+
+.ai-chat-item-preview{
+  font-size:12px;
+  color:#aaa;
+  margin-bottom:8px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.ai-chat-item-date{
+  font-size:10px;
+  color:#666;
+  display:flex;
+  justify-content:space-between;
+}
+
+.ai-chat-item-delete{
+  color:#aa0000;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.ai-chat-item-delete:hover{
+  text-decoration:underline;
+}
+
+.ai-new-chat-btn{
+  background:#6a00ff;
+  border:none;
+  color:white;
+  padding:12px;
+  border-radius:10px;
+  font-size:14px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.2s;
+  margin-bottom:20px;
+  width:100%;
+}
+
+.ai-new-chat-btn:hover{
+  background:#8a2bff;
+}
+
+/* CHAT CONTAINER */
+.ai-chat-container{
+  max-width:800px;
+  margin:0 auto;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  padding:10px 0;
+}
+
+.ai-message{
+  display:flex;
+  gap:12px;
+  animation:slideIn 0.3s;
+}
+
+.ai-message.user{
+  flex-direction:row-reverse;
+}
+
+.ai-avatar{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:#6a00ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  flex-shrink:0;
+  box-shadow:0 5px 10px rgba(106,0,255,0.3);
+}
+
+.ai-avatar.user{
+  background:#2a2a2a;
+  box-shadow:none;
+}
+
+.ai-bubble{
+  max-width:70%;
+  padding:12px 18px;
+  border-radius:20px;
+  font-size:14px;
+  line-height:1.5;
+  word-wrap:break-word;
+}
+
+.ai-bubble.assistant{
+  background:rgba(106,0,255,0.15);
+  border:1px solid rgba(106,0,255,0.3);
+  border-top-left-radius:5px;
+}
+
+.ai-bubble.user{
+  background:#2a2a2a;
+  border-top-right-radius:5px;
+}
+
+/* THINKING ANIMATION */
+.ai-thinking{
+  display:flex;
+  gap:5px;
+  padding:15px 20px;
+  background:rgba(106,0,255,0.1);
+  border-radius:20px;
+  width:fit-content;
+  margin-left:50px;
+  margin-bottom:10px;
+}
+
+.ai-thinking-dot{
+  width:8px;
+  height:8px;
+  background:#6a00ff;
+  border-radius:50%;
+  animation:thinking 1.4s infinite;
+}
+
+.ai-thinking-dot:nth-child(2){
+  animation-delay:0.2s;
+}
+
+.ai-thinking-dot:nth-child(3){
+  animation-delay:0.4s;
+}
+
+/* INPUT AREA */
+.ai-input-container{
+  background:linear-gradient(135deg,#0a0a0a,#1a0033);
+  padding:20px;
+  display:flex;
+  gap:10px;
+  max-width:800px;
+  margin:20px auto 0;
+  width:100%;
+  border-top:1px solid rgba(106,0,255,0.2);
+  position:sticky;
+  bottom:0;
+  align-items:center;
+}
+
+.ai-input{
+  flex:1;
+  background:rgba(255,255,255,0.05);
+  border:2px solid rgba(106,0,255,0.3);
+  color:white;
+  padding:15px 20px;
+  border-radius:30px;
+  font-size:15px;
+  outline:none;
+  transition:0.2s;
+}
+
+.ai-input:focus{
+  border-color:#6a00ff;
+  background:rgba(255,255,255,0.1);
+  transform:scale(1.02);
+}
+
+.ai-send-btn{
+  background:#6a00ff;
+  border:none;
+  color:white;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  font-size:18px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:0.2s;
+  flex-shrink:0;
+  box-shadow:0 5px 15px rgba(106,0,255,0.3);
+}
+
+.ai-send-btn:hover{
+  background:#8a2bff;
+  transform:scale(1.05);
+  box-shadow:0 8px 20px rgba(106,0,255,0.5);
+}
+
+/* FOOTER */
+.ai-footer{
+  text-align:center;
+  padding:15px;
+  font-size:12px;
+  color:#666;
+  background:#0a0a0a;
+}
+
+/* ANIMATIONS */
+@keyframes thinking{
+  0%,60%,100%{
+    transform:translateY(0);
+    opacity:0.6;
+  }
+  30%{
+    transform:translateY(-10px);
+    opacity:1;
+  }
+}
+
+@keyframes slideIn{
+  from{
+    opacity:0;
+    transform:translateY(10px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* OVERLAY */
+.ai-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:rgba(0,0,0,0.5);
+  z-index:999;
+  display:none;
+}
+
+.ai-overlay.show{
+  display:block;
+}
+
+/* Maze Notifications */
+.maze-notification{
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:#1a1a1a;
+  border-left:4px solid #6a00ff;
+  border-radius:10px;
+  padding:15px 20px;
+  box-shadow:0 10px 30px rgba(106,0,255,0.3);
+  display:flex;
+  align-items:center;
+  gap:15px;
+  z-index:2000;
+  animation:slideInRight 0.3s;
+  max-width:350px;
+  border:1px solid #2a2a2a;
+}
+
+.maze-notification.fade-out{
+  animation:slideOutRight 0.3s forwards;
+}
+
+.maze-notification-icon{
+  font-size:24px;
+}
+
+.maze-notification-content{
+  flex:1;
+}
+
+.maze-notification-title{
+  font-size:14px;
+  font-weight:bold;
+  color:#6a00ff;
+  margin-bottom:3px;
+}
+
+.maze-notification-message{
+  font-size:13px;
+  color:#ccc;
+}
+
+/* Maze Modal */
+.maze-modal{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:rgba(0,0,0,0.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2001;
+  animation:fadeIn 0.2s;
+  backdrop-filter:blur(3px);
+}
+
+.maze-modal-content{
+  background:#1a1a1a;
+  border-radius:15px;
+  width:90%;
+  max-width:400px;
+  border:1px solid #2a2a2a;
+  box-shadow:0 20px 40px rgba(106,0,255,0.3);
+  animation:scaleIn 0.3s;
+}
+
+.maze-modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px 20px;
+  border-bottom:1px solid #2a2a2a;
+}
+
+.maze-modal-title{
+  font-size:16px;
+  font-weight:bold;
+  color:#6a00ff;
+}
+
+.maze-modal-close{
+  background:transparent;
+  border:none;
+  color:#aaa;
+  font-size:20px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.maze-modal-close:hover{
+  color:#6a00ff;
+}
+
+.maze-modal-body{
+  padding:20px;
+}
+
+.maze-modal-input{
+  width:100%;
+  background:rgba(255,255,255,0.05);
+  border:2px solid #2a2a2a;
+  color:white;
+  padding:12px 15px;
+  border-radius:10px;
+  font-size:14px;
+  outline:none;
+  transition:0.2s;
+}
+
+.maze-modal-input:focus{
+  border-color:#6a00ff;
+  background:rgba(106,0,255,0.05);
+}
+
+.maze-modal-footer{
+  display:flex;
+  gap:10px;
+  padding:15px 20px;
+  border-top:1px solid #2a2a2a;
+}
+
+.maze-modal-btn{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  font-size:14px;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.maze-modal-btn.cancel{
+  background:#2a2a2a;
+  color:#aaa;
+}
+
+.maze-modal-btn.cancel:hover{
+  background:#333;
+}
+
+.maze-modal-btn.confirm{
+  background:#6a00ff;
+  color:white;
+}
+
+.maze-modal-btn.confirm:hover{
+  background:#8a2bff;
+}
+
+/* Animações */
+@keyframes slideInRight{
+  from{
+    transform:translateX(100%);
+    opacity:0;
+  }
+  to{
+    transform:translateX(0);
+    opacity:1;
+  }
+}
+
+@keyframes slideOutRight{
+  from{
+    transform:translateX(0);
+    opacity:1;
+  }
+  to{
+    transform:translateX(100%);
+    opacity:0;
+  }
+}
+
+@keyframes scaleIn{
+  from{
+    transform:scale(0.9);
+    opacity:0;
+  }
+  to{
+    transform:scale(1);
+    opacity:1;
+  }
+}
+
+@keyframes fadeIn{
+  from{ opacity:0; }
+  to{ opacity:1; }
+}
+
+/* RESPONSIVE */
+@media (max-width:500px){
+  .ai-suggestions{
+    grid-template-columns:1fr;
+  }
+  
+  .ai-logo{
+    font-size:42px;
+  }
+  
+  .ai-bubble{
+    max-width:85%;
+  }
+  
+  .ai-sidebar{
+    width:100%;
+  }
+  
+  .maze-notification{
+    left:20px;
+    right:20px;
+    max-width:none;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="ai-sidebar" id="aiSidebar">
+  <div class="ai-sidebar-header">
+    <div class="ai-sidebar-title">MAZE <span>CHATS</span></div>
+    <button class="ai-sidebar-close" onclick="toggleSidebar()">×</button>
+  </div>
+  
+  <button class="ai-new-chat-btn" onclick="newChat()">+ Novo Chat</button>
+  
+  <div class="ai-chat-list" id="aiChatList">
+    <!-- Chats salvos aparecem aqui -->
+  </div>
+</div>
+
+<!-- Overlay -->
+<div class="ai-overlay" id="aiOverlay" onclick="toggleSidebar()"></div>
+
+<div class="ai-header">
+  <button class="ai-back-btn" onclick="toggleSidebar()">☰</button>
+  <div class="ai-header-title">
+    MAZE <span>IA</span>
+    <button class="ai-rename-btn" id="renameChatBtn" onclick="renameCurrentChat()" style="display:none;">✏️ Renomear</button>
+  </div>
+  <div class="ai-actions">
+    <button class="ai-icon-btn" onclick="saveChat()" title="Salvar chat">💾</button>
+    <button class="ai-clear-btn" onclick="clearChat()">Limpar</button>
+  </div>
+</div>
+
+<div class="ai-content" id="aiContent">
+  <!-- Tela de boas-vindas -->
+  <div class="ai-welcome" id="aiWelcome">
+    <div class="ai-logo">MAZE <span>IA</span></div>
+    <div class="ai-subtitle">Sua assistente pessoal com tecnologia DeepSeek</div>
+    
+    <div class="ai-suggestions">
+      <div class="ai-suggestion-card" onclick="askSuggestion('O que é inteligência artificial?')">
+        <div class="ai-suggestion-emoji">🤖</div>
+        <div class="ai-suggestion-text">O que é IA?</div>
+      </div>
+      <div class="ai-suggestion-card" onclick="askSuggestion('Me explique como funciona a DeepSeek')">
+        <div class="ai-suggestion-emoji">🔍</div>
+        <div class="ai-suggestion-text">Como funciona</div>
+      </div>
+      <div class="ai-suggestion-card" onclick="askSuggestion('Qual a capital do Brasil?')">
+        <div class="ai-suggestion-emoji">🌎</div>
+        <div class="ai-suggestion-text">Geografia</div>
+      </div>
+      <div class="ai-suggestion-card" onclick="askSuggestion('Me ajude com um código em JavaScript')">
+        <div class="ai-suggestion-emoji">💻</div>
+        <div class="ai-suggestion-text">Programação</div>
+      </div>
+      <div class="ai-suggestion-card" onclick="askSuggestion('Me conte uma piada')">
+        <div class="ai-suggestion-emoji">😂</div>
+        <div class="ai-suggestion-text">Piada</div>
+      </div>
+      <div class="ai-suggestion-card" onclick="askSuggestion('Quem é você?')">
+        <div class="ai-suggestion-emoji">🤔</div>
+        <div class="ai-suggestion-text">Quem é você?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container do chat -->
+  <div class="ai-chat-container" id="aiChatContainer"></div>
+</div>
+
+<!-- Área de input fixa na parte inferior -->
+<div class="ai-input-container">
+  <input type="text" class="ai-input" id="aiInput" placeholder="Digite sua pergunta..." onkeypress="if(event.key==='Enter') sendMessage()">
+  <button class="ai-send-btn" id="aiSendBtn" onclick="sendMessage()">➤</button>
+</div>
+
+<div class="ai-footer">
+  MAZE IA • Auto-save ativo • Powered by DeepSeek
+</div>
+
+<script>
+// SUA CHAVE API DO OPENROUTER
+const API_KEY = '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';
+const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+// Histórico da conversa
+let conversationHistory = [];
+let currentChatId = null;
+
+// Carregar chats salvos
+let savedChats = JSON.parse(localStorage.getItem('maze_chats')) || [];
+
+// Função para toggle sidebar
+function toggleSidebar(){
+  document.getElementById('aiSidebar').classList.toggle('open');
+  document.getElementById('aiOverlay').classList.toggle('show');
+  updateChatList();
+}
+
+// Função para atualizar lista de chats
+function updateChatList(){
+  const chatList = document.getElementById('aiChatList');
+  chatList.innerHTML = '';
+  
+  savedChats.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(chat => {
+    const chatItem = document.createElement('div');
+    chatItem.className = 'ai-chat-item';
+    chatItem.onclick = () => loadChat(chat.id);
+    
+    const firstMessage = chat.messages.find(m => m.role === 'user')?.content || 'Chat vazio';
+    
+    chatItem.innerHTML = `
+      <div class="ai-chat-item-title">
+        <span>${chat.name}</span>
+        <span class="ai-chat-item-rename" onclick="event.stopPropagation(); renameChat('${chat.id}')">✏️</span>
+      </div>
+      <div class="ai-chat-item-preview">${firstMessage.substring(0, 50)}${firstMessage.length > 50 ? '...' : ''}</div>
+      <div class="ai-chat-item-date">
+        <span>${new Date(chat.date).toLocaleDateString()}</span>
+        <span class="ai-chat-item-delete" onclick="event.stopPropagation(); deleteChat('${chat.id}')">🗑️</span>
+      </div>
+    `;
+    
+    chatList.appendChild(chatItem);
+  });
+  
+  if(savedChats.length === 0){
+    chatList.innerHTML = '<div style="text-align:center; color:#666; padding:20px;">Nenhum chat salvo</div>';
+  }
+}
+
+// Função para auto-salvar o chat
+function autoSaveChat(){
+  if(conversationHistory.length === 0) return;
+  
+  // Se já existe um chat atual, atualiza ele
+  if(currentChatId){
+    const chatIndex = savedChats.findIndex(c => c.id === currentChatId);
+    if(chatIndex !== -1){
+      savedChats[chatIndex].messages = [...conversationHistory];
+      savedChats[chatIndex].date = new Date().toISOString();
+      localStorage.setItem('maze_chats', JSON.stringify(savedChats));
+      updateChatList();
+    }
+  } 
+  // Se não existe, cria um chat temporário com nome automático
+  else {
+    const tempName = `Chat ${savedChats.length + 1}`;
+    const newChat = {
+      id: Date.now().toString(),
+      name: tempName,
+      messages: [...conversationHistory],
+      date: new Date().toISOString()
+    };
+    
+    savedChats.push(newChat);
+    localStorage.setItem('maze_chats', JSON.stringify(savedChats));
+    currentChatId = newChat.id;
+    updateChatList();
+    
+    // Mostrar botão de renomear
+    document.getElementById('renameChatBtn').style.display = 'inline-block';
+    
+    // Notifica que foi criado um chat temporário
+    showMazeNotification('📝 Chat auto-salvo', `"${tempName}" foi salvo automaticamente. Clique em Renomear para personalizar.`);
+  }
+}
+
+// Função para renomear chat atual
+function renameCurrentChat(){
+  if(!currentChatId) return;
+  
+  const chat = savedChats.find(c => c.id === currentChatId);
+  if(!chat) return;
+  
+  showMazePrompt('✏️ Renomear Chat', 'Digite o novo nome:', chat.name, (novoNome) => {
+    if(!novoNome) return;
+    
+    chat.name = novoNome;
+    localStorage.setItem('maze_chats', JSON.stringify(savedChats));
+    updateChatList();
+    showMazeNotification('✅ Nome atualizado', `Chat renomeado para "${novoNome}".`);
+  });
+}
+
+// Função para renomear chat específico
+function renameChat(chatId){
+  const chat = savedChats.find(c => c.id === chatId);
+  if(!chat) return;
+  
+  showMazePrompt('✏️ Renomear Chat', 'Digite o novo nome:', chat.name, (novoNome) => {
+    if(!novoNome) return;
+    
+    chat.name = novoNome;
+    if(currentChatId === chatId){
+      // Atualizar botão se for o chat atual
+      document.getElementById('renameChatBtn').style.display = 'inline-block';
+    }
+    localStorage.setItem('maze_chats', JSON.stringify(savedChats));
+    updateChatList();
+    showMazeNotification('✅ Nome atualizado', `Chat renomeado para "${novoNome}".`);
+  });
+}
+
+// Função para carregar chat
+function loadChat(chatId){
+  const chat = savedChats.find(c => c.id === chatId);
+  if(!chat) return;
+  
+  currentChatId = chatId;
+  conversationHistory = [...chat.messages];
+  
+  // Mostrar botão de renomear
+  document.getElementById('renameChatBtn').style.display = 'inline-block';
+  
+  // Limpar container
+  document.getElementById('aiChatContainer').innerHTML = '';
+  document.getElementById('aiWelcome').style.display = 'none';
+  
+  // Renderizar mensagens
+  chat.messages.forEach(msg => {
+    addMessage(msg.content, msg.role, false);
+  });
+  
+  toggleSidebar();
+}
+
+// Função para deletar chat
+function deleteChat(chatId){
+  if(confirm('Tem certeza que deseja deletar este chat?')){
+    savedChats = savedChats.filter(c => c.id !== chatId);
+    localStorage.setItem('maze_chats', JSON.stringify(savedChats));
+    updateChatList();
+    
+    if(currentChatId === chatId){
+      newChat();
+    }
+    
+    showMazeNotification('🗑️ Chat deletado', 'O chat foi removido com sucesso.');
+  }
+}
+
+// Função para novo chat
+function newChat(){
+  conversationHistory = [];
+  currentChatId = null;
+  document.getElementById('aiChatContainer').innerHTML = '';
+  document.getElementById('aiWelcome').style.display = 'block';
+  document.getElementById('renameChatBtn').style.display = 'none';
+  toggleSidebar();
+} 
+
+// Função para voltar
+function goBack(){
+  window.location.href = "about:blank";
+}
+
+// Função para limpar o chat
+function clearChat(){
+  if(conversationHistory.length > 0 && !confirm('Tem certeza que deseja limpar o chat atual?')) return;
+  
+  document.getElementById("aiChatContainer").innerHTML = "";
+  document.getElementById("aiWelcome").style.display = "block";
+  conversationHistory = [];
+  currentChatId = null;
+  document.getElementById('renameChatBtn').style.display = 'none';
+  
+  showMazeNotification('🧹 Chat limpo', 'A conversa foi reiniciada.');
+}
+
+// Função principal para enviar mensagem
+async function sendMessage(){
+  let input = document.getElementById("aiInput");
+  let pergunta = input.value.trim();
+  
+  if(pergunta === "") return;
+  
+  // Esconder tela de boas-vindas
+  document.getElementById("aiWelcome").style.display = "none";
+  
+  // Adicionar mensagem do usuário
+  addMessage(pergunta, 'user');
+  
+  // Limpar input
+  input.value = "";
+  
+  // Mostrar animação de pensamento
+  showThinking();
+  
+  // Adicionar ao histórico
+  conversationHistory.push({role: "user", content: pergunta});
+  
+  // Auto-salvar após cada mensagem do usuário
+  autoSaveChat();
+  
+  try {
+    // Chamar a API do OpenRouter com DeepSeek
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": window.location.href,
+        "X-Title": "MAZE IA"
+      },
+      body: JSON.stringify({
+        "model": "deepseek/deepseek-r1",
+        "messages": conversationHistory,
+        "temperature": 0.7,
+        "max_tokens": 2000
+      })
+    });
+    
+    const data = await response.json();
+    
+    // Remover animação
+    removeThinking();
+    
+    // Pegar resposta
+    let resposta = data.choices[0].message.content;
+    
+    // Adicionar resposta da MAZE IA
+    addMessage(resposta, 'assistant');
+    
+    // Adicionar ao histórico
+    conversationHistory.push({role: "assistant", content: resposta});
+    
+    // Auto-salvar após resposta
+    autoSaveChat();
+    
+  } catch (error) {
+    console.error("Erro:", error);
+    
+    // Remover animação
+    removeThinking();
+    
+    // Resposta de erro
+    addMessage("Desculpe, tive um pequeno problema para responder. Pode perguntar de novo?", 'assistant');
+  }
+}
+
+// Função para sugestões
+function askSuggestion(sugestao){
+  document.getElementById("aiInput").value = sugestao;
+  sendMessage();
+}
+
+// Função para adicionar mensagem no chat
+function addMessage(texto, sender, salvar = true){
+  let container = document.getElementById("aiChatContainer");
+  
+  let messageDiv = document.createElement("div");
+  messageDiv.className = `ai-message ${sender}`;
+  
+  let avatar = document.createElement("div");
+  avatar.className = `ai-avatar ${sender}`;
+  avatar.innerHTML = sender === 'user' ? '👤' : '🪻';
+  
+  let bubble = document.createElement("div");
+  bubble.className = `ai-bubble ${sender}`;
+  bubble.innerText = texto;
+  
+  messageDiv.appendChild(avatar);
+  messageDiv.appendChild(bubble);
+  container.appendChild(messageDiv);
+  
+  // Rolar para o final
+  container.scrollTop = container.scrollHeight;
+}
+
+// Função para mostrar animação de pensamento
+function showThinking(){
+  let container = document.getElementById("aiChatContainer");
+  
+  let thinkingDiv = document.createElement("div");
+  thinkingDiv.className = "ai-thinking";
+  thinkingDiv.id = "aiThinking";
+  
+  for(let i = 0; i < 3; i++){
+    let dot = document.createElement("div");
+    dot.className = "ai-thinking-dot";
+    thinkingDiv.appendChild(dot);
+  }
+  
+  container.appendChild(thinkingDiv);
+  container.scrollTop = container.scrollHeight;
+}
+
+// Função para remover animação
+function removeThinking(){
+  let thinking = document.getElementById("aiThinking");
+  if(thinking) thinking.remove();
+}
+
+// Função para criar notificação personalizada
+function showMazeNotification(titulo, mensagem){
+  // Remover notificação anterior se existir
+  const oldNotif = document.querySelector('.maze-notification');
+  if(oldNotif) oldNotif.remove();
+  
+  const notif = document.createElement('div');
+  notif.className = 'maze-notification';
+  notif.innerHTML = `
+    <div class="maze-notification-icon">${titulo.includes('✅') ? '✅' : titulo.includes('❌') ? '❌' : '📢'}</div>
+    <div class="maze-notification-content">
+      <div class="maze-notification-title">${titulo}</div>
+      <div class="maze-notification-message">${mensagem}</div>
+    </div>
+  `;
+  
+  document.body.appendChild(notif);
+  
+  // Auto-remover após 3 segundos
+  setTimeout(() => {
+    notif.classList.add('fade-out');
+    setTimeout(() => notif.remove(), 300);
+  }, 3000);
+}
+
+// Função para criar modal de input personalizado
+function showMazePrompt(titulo, placeholder, valorInicial = '', callback){
+  // Remover modal anterior se existir
+  const oldModal = document.querySelector('.maze-modal');
+  if(oldModal) oldModal.remove();
+  
+  const modal = document.createElement('div');
+  modal.className = 'maze-modal';
+  modal.innerHTML = `
+    <div class="maze-modal-content">
+      <div class="maze-modal-header">
+        <div class="maze-modal-title">${titulo}</div>
+        <button class="maze-modal-close" onclick="this.closest('.maze-modal').remove()">×</button>
+      </div>
+      <div class="maze-modal-body">
+        <input type="text" class="maze-modal-input" placeholder="${placeholder}" id="mazePromptInput" value="${valorInicial}">
+      </div>
+      <div class="maze-modal-footer">
+        <button class="maze-modal-btn cancel" onclick="this.closest('.maze-modal').remove()">Cancelar</button>
+        <button class="maze-modal-btn confirm" id="mazeConfirmBtn">OK</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Focar no input
+  setTimeout(() => {
+    const input = document.getElementById('mazePromptInput');
+    input.focus();
+    input.select();
+  }, 100);
+  
+  // Ações dos botões
+  document.getElementById('mazeConfirmBtn').onclick = () => {
+    const valor = document.getElementById('mazePromptInput').value.trim();
+    if(valor) callback(valor);
+    modal.remove();
+  };
+  
+  // Enter no input
+  document.getElementById('mazePromptInput').onkeypress = (e) => {
+    if(e.key === 'Enter'){
+      const valor = e.target.value.trim();
+      if(valor) callback(valor);
+      modal.remove();
+    }
+  };
+}
+
+// Função para salvar manualmente (mantida para compatibilidade)
+function saveChat(){
+  if(conversationHistory.length === 0){
+    showMazeNotification('❌ Nenhuma mensagem', 'Não há nada para salvar ainda!');
+    return;
+  }
+  
+  if(currentChatId){
+    renameCurrentChat();
+  } else {
+    autoSaveChat();
+  }
+}
+
+// Inicializar lista de chats
+updateChatList();
+
+// Verificar se veio com parâmetro na URL
+window.onload = function(){
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get('q');
+  
+  if(q){
+    document.getElementById("aiInput").value = q;
+    sendMessage();
+  }
+  
+  // Mensagem de boas-vindas
+  setTimeout(() => {
+    showMazeNotification('👋 Bem-vindo!', 'MAZE IA está pronta para ajudar. Os chats são salvos automaticamente!');
+  }, 500);
+}
+</script>
+
+</body>
+</html>
